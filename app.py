@@ -3,28 +3,51 @@ import pandas as pd
 import joblib
 from preprocessing import normalisasi, stopword, stemming
 
+# Set up the main title and sidebar options
+st.set_page_config(page_title="Sentiment Analysis GAME", layout="wide")
+
+# CSS kustom untuk mengubah font dan gaya
+st.markdown("""
+    <style>
+    body {
+        font-family: 'Arial', sans-serif;
+    }
+    .main-title {
+        color: #4CAF50;
+        text-align: center;
+    }
+    .header {
+        color: #3f51b5;
+    }
+    .result-positive {
+        color: green;
+        font-weight: bold;
+    }
+    .result-negative {
+        color: red;
+        font-weight: bold;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Load model and vectorizer
 model = joblib.load('nb.pkl')
 vectorizer = joblib.load('tfidf.pkl')
 
-# Set up the main title and sidebar options
-st.set_page_config(page_title="Sentiment Analysis GAME", layout="wide")
-st.title('Sentiment Analysis GAME with NAIVE BAYES + TFIDF')
+st.markdown('<h1 class="main-title">Sentiment Analysis GAME with NAIVE BAYES</h1>', unsafe_allow_html=True)
 
 st.sidebar.header('Input Options')
 option = st.sidebar.radio('Choose Input Option:', ['Text', 'File'])
-
 
 # Function to map predictions to labels
 def map_prediction(pred):
     return 'Positif' if pred == 1 else 'Negatif'
 
-
 # Process text input
 if option == 'Text':
-    st.header('Text Input')
+    st.markdown('<h2 class="header">Text Input</h2>', unsafe_allow_html=True)
     user_input = st.text_area('Enter Text:', '')
-    if st.button('Analyze'):
+    if st.button('Classify'):
         # Preprocess text
         Normalisasi = normalisasi(user_input)
         Stopword = stopword(Normalisasi)
@@ -47,13 +70,13 @@ if option == 'Text':
 
         # Display sentiment with appropriate color
         if sentiment == 'Negatif':
-            st.markdown(f'<span style="color:red;">Sentiment: {sentiment}</span>', unsafe_allow_html=True)
+            st.markdown(f'<span class="result-negative">Sentiment: {sentiment}</span>', unsafe_allow_html=True)
         else:
-            st.markdown(f'<span style="color:green;">Sentiment: {sentiment}</span>', unsafe_allow_html=True)
+            st.markdown(f'<span class="result-positive">Sentiment: {sentiment}</span>', unsafe_allow_html=True)
 
 # Process file input
 elif option == 'File':
-    st.header('File Input')
+    st.markdown('<h2 class="header">File Input</h2>', unsafe_allow_html=True)
     uploaded_file = st.file_uploader('Upload Excel/CSV File:', type=['csv', 'xlsx'])
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file) if uploaded_file.name.endswith('xlsx') else pd.read_csv(uploaded_file)
